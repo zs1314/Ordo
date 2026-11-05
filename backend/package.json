@@ -1,0 +1,13 @@
+{
+  "name": "todo",
+  "private": true,
+  "description": "A self-hosted to-do board for working alongside AI agents",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:browser": "node dev/test-board.mjs && node dev/test-heroes.mjs && node dev/test-demo.mjs && node dev/test-canvas-sync.mjs"
+  }
+}

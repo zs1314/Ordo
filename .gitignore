@@ -1,0 +1,29 @@
+# Build products
+.build/
+dist/
+build/
+*.app/
+*.dmg
+*.zip
+node_modules/
+
+# Local data and credentials
+backend/data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+.env
+.env.*
+!.env.example
+backend/deploy/deploy.env
+auth.json
+credentials.json
+*.pem
+*.key
+
+# Local diagnostics and editor files
+*.log
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,75 @@
+# nginx: https://@DEMO_DOMAIN@ → the sample-data demo. Static files only (/opt/@APP@-demo/current, published by demo.sh):
+# no API, no login, nothing proxied to the board. The data is made up and lives in the visitor's browser (demo/); changes go
+# nowhere, and with connect-src 'none' the page cannot send requests at all.
+# demo.sh setup renders it into /etc/nginx/sites-available/@DEMO_DOMAIN@; Let's Encrypt certificate (webroot).
+# dev/test-demo.mjs applies the add_header lines below to its local server.
+
+limit_req_zone $binary_remote_addr zone=todo_demo:1m rate=30r/s;
+# Caching: fonts for a day; pages, scripts and styles are revalidated each time, so a new release shows up at once.
+# no-transform keeps proxies such as Cloudflare from rewriting pages (e.g. injecting analytics scripts the CSP would block).
+map $uri $todo_demo_cache {
+    ~^/web/fonts/ "max-age=86400, no-transform";
+    default   "no-cache, no-transform";
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name @DEMO_DOMAIN@;
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+    }
+    location / { return 301 https://$host$request_uri; }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name @DEMO_DOMAIN@;
+    ssl_certificate /etc/letsencrypt/live/@DEMO_DOMAIN@/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/@DEMO_DOMAIN@/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    access_log /var/log/nginx/todo-demo.access.log;
+    error_log /var/log/nginx/todo-demo.error.log;
+    server_tokens off;
+
+    root /opt/@APP@-demo/current;
+    index index.html;
+    charset utf-8;
+    gzip on;
+    gzip_min_length 1024;
+    gzip_types text/css application/javascript text/javascript image/svg+xml;
+    # 30 requests a second per address; the first visit fetches ~80 modules at once, hence the burst of 200
+    limit_req zone=todo_demo burst=200 nodelay;
+    limit_req_status 429;
+    client_max_body_size 1k;
+
+    add_header X-Robots-Tag "noindex, nofollow" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy no-referrer always;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+    add_header Cross-Origin-Opener-Policy same-origin always;
+    add_header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" always;
+    add_header Cache-Control $todo_demo_cache always;
+
+    # read-only
+    if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+    location ~ /\. { return 404; }
+    # .mjs (core/, shared with the server) and .woff2 are unknown to older nginx; browsers need the right types
+    location ~ \.mjs$ {
+        types { }
+        default_type text/javascript;
+    }
+    location ~ \.woff2$ {
+        types { }
+        default_type font/woff2;
+    }
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

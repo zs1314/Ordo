@@ -1,0 +1,37 @@
+import { html } from '../vendor/preact-htm.js';
+const PATHS = {
+  sun: 'M12 3v1m0 16v1M3 12h1m16 0h1M5.6 5.6l.7.7m11.4 11.4.7.7M5.6 18.4l.7-.7M17.7 6.3l.7-.7M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
+  upcoming: 'M7 3v4m10-4v4M4 10h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2m4 9 2 2 4-4',
+  all: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',
+  star: 'm12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z',
+  check: 'm5 12 4 4L19 6',
+  circle: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0',
+  inbox: 'M4 4h16v16H4ZM4 14h5l2 3h2l2-3h5',
+  folder: 'M3 7V5h7l2 3h9v12H3Z',
+  repeat: 'm17 2 4 4-4 4M3 11V8a2 2 0 0 1 2-2h16M7 22l-4-4 4-4m14-1v3a2 2 0 0 1-2 2H3',
+  search: 'M16 10a6 6 0 1 1-12 0 6 6 0 0 1 12 0m-1.5 4.5L21 21',
+  plus: 'M12 5v14M5 12h14',
+  close: 'm6 6 12 12M18 6 6 18',
+  chevron: 'm9 5 7 7-7 7',
+  down: 'm6 9 6 6 6-6',
+  clock: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M12 7v5l3 2',
+  settings: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8m-2-5h4l.7 3 2.3 1 2.7-.8 2 3.5-2 2.3v2l2 2.3-2 3.5-2.7-.8-2.3 1-.7 3h-4l-.7-3-2.3-1-2.7.8-2-3.5 2-2.3v-2l-2-2.3 2-3.5L7 7l2.3-1Z',
+  trash: 'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7',
+  restore: 'M3 4v6h6M3.5 10a9 9 0 1 1 1 8M12 7v5l3 2',
+  more: 'M5 12h.01M12 12h.01M19 12h.01',
+  flag: 'M5 21V3m0 1c5-4 9 4 14 0v10c-5 4-9-4-14 0',
+  note: 'M6 3h12v18H6ZM9 7h6M9 11h6M9 15h4',
+  tag: 'M3 3h8l10 10-8 8L3 11Zm4 4h.01',
+  list: 'M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1',
+  arrow: 'M5 12h14m-5-5 5 5-5 5',
+  cloud: 'M7 18a5 5 0 1 1 1-10 6 6 0 0 1 11 2 4 4 0 0 1-1 8H7',
+  laptop: 'M5 4h14v12H5ZM2 20h20',
+  agent: 'M8 3h8v4H8ZM4 7h16v13H4ZM8 12h.01M16 12h.01M8 16h8M1 11v5m22-5v5',
+  sort: 'M4 5h16M4 12h11M4 19h6',
+  moon: 'M20 14A9 9 0 0 1 10 3a9 9 0 1 0 10 11',
+  bolt: 'm13 2-9 12h7l-1 8 10-13h-8Z',
+  calendar: 'M7 3v4m10-4v4M4 10h16M4 5h16v16H4ZM8 14h1m6 0h1m-8 4h1m6 0h1',
+};
+export function Icon({ name, size = 18, class: cls = '' }) {
+  return html`<svg class=${`d-icon ${cls}`} width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d=${PATHS[name] || PATHS.list} /></svg>`;
+}

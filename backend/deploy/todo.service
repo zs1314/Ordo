@@ -1,0 +1,32 @@
+# The board as a systemd service; setup.sh renders it into /etc/systemd/system/@APP@.service.
+# Its own system user, read-only code, writes only to /var/lib/@APP@, capped memory.
+[Unit]
+Description=ToDo board (https://@DOMAIN@)
+After=network.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=@APP@
+Group=@APP@
+WorkingDirectory=/opt/@APP@/current
+EnvironmentFile=/etc/@APP@.env
+Environment=NODE_OPTIONS=--max-old-space-size=128
+ExecStart=/opt/@APP@/runtime/node /opt/@APP@/current/server.mjs
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+KillSignal=SIGTERM
+MemoryHigh=160M
+MemoryMax=224M
+MemorySwapMax=64M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/@APP@
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

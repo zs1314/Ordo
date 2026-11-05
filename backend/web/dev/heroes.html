@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>头图一览</title>
+<link rel="icon" href="data:," />
+<!--
+  Preview page for the board's header animations, for maintenance: http://127.0.0.1:4404/dev/heroes.html
+  Parameters (all optional):
+    only=relay        show only this one
+    w=1040&h=220      width and height of the header animation (default 1040×220, same as the board)
+    mode=dark|light   light or dark (default: follow the system)
+    t=12000           start this many milliseconds in (to see later phases, e.g. the second distribution in flow matching)
+  window.__cost records how many milliseconds each frame took to draw; dev/test-heroes.mjs reads it.
+-->
+<script>
+  // Has to run before the header animation modules load: moves the clock forward (t) and times every frame
+  const Q = new URLSearchParams(location.search), OFF = +Q.get("t") || 0;
+  if (OFF) { const pn = performance.now.bind(performance); performance.now = () => pn() - OFF; }
+  window.__cost = [];
+  const raf0 = window.requestAnimationFrame.bind(window);
+  window.requestAnimationFrame = (cb) => raf0((ts) => { const a = performance.now(); cb(ts); window.__cost.push(performance.now() - a); });
+</script>
+<link rel="stylesheet" href="/styles.css" />
+<style>
+  body { padding: 28px 24px 60px; }
+  .wrap { max-width: calc(var(--w) + 2px); margin: 0 auto; }
+  h1 { font-size: 1.3em; margin: 0 0 4px; } .lead { color: hsl(var(--faint)); font-size: 13px; margin: 0 0 22px; }
+  /* Do not use class names the board already has, such as .item (the board's .item is a flex container and would squeeze the
+     header animation narrower) */
+  .cell { margin-bottom: 26px; }
+  .cell .hero { width: var(--w); height: var(--h); max-width: 100%; }
+  .meta { display: flex; gap: 12px; align-items: baseline; margin: 8px 2px 0; font-size: 13.5px; }
+  .meta b { font-weight: 700; } .meta .id { color: hsl(var(--faint)); } .meta .hint { color: hsl(var(--muted-foreground)); }
+  .meta a { color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap" id="root"></div>
+<script type="module">
+  import { HEROES } from "/lib/heroes/index.js";
+  const W = +Q.get("w") || 1040, H = +Q.get("h") || 220, only = Q.get("only"), mode = Q.get("mode") || "auto";
+  document.documentElement.dataset.mode = mode;
+  document.documentElement.style.setProperty("--w", `${W}px`);
+  document.documentElement.style.setProperty("--h", `${H}px`);
+  const root = document.getElementById("root"), list = only ? HEROES.filter((x) => x.id === only) : HEROES;
+  if (!only) root.insertAdjacentHTML("beforeend", `<h1>头图一览</h1><p class="lead">${HEROES.length} 个，按滑块里的顺序。点名字只看那一个。</p>`);
+  const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
+  const colors = () => ({ ink: v("--foreground"), paper: v("--card"), red: v("--hero-flag") });
+  window.__heroes = {};
+  for (const x of list) {
+    const box = document.createElement("div");
+    box.className = "cell";
+    box.innerHTML = `<div class="hero"><canvas aria-hidden="true"></canvas></div>
+      <div class="meta"><b><a href="?only=${x.id}&w=${W}&h=${H}&mode=${mode}">${x.name}</a></b><span class="id mono">${x.id}</span><span class="hint">${x.hint}</span></div>`;
+    root.append(box);
+    const eng = x.mount(box.querySelector("canvas"));
+    eng.setColors(colors());
+    window.__heroes[x.id] = eng;
+  }
+  window.__ready = true;
+</script>
+</body>
+</html>
