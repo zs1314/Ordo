@@ -113,10 +113,8 @@ open dist
 
 目前尚未提供 iCloud / 多设备同步或系统到期通知；习惯的每日重置时间用于打卡计算。
 
-## 致谢与许可
+## 许可
 
-Ordo 基于 [Axi404/todo](https://github.com/Axi404/todo) 的任务与 SQLite 数据层开发，重新设计了 Mac 桌面界面，并加入原生应用外壳与实际 Codex 执行流程。所基于的上游提交为 [`e740e60`](https://github.com/Axi404/todo/commit/e740e605d50732e74f8d6050f1121b8fc0ca3a34)。
-
-项目采用 [MIT License](LICENSE)。感谢上游作者与 Preact、htm、Node.js 等开源项目，第三方许可见[构建指南](docs/development.md#第三方许可)。Ordo 是独立项目，与 Apple、OpenAI 无隶属关系。
+项目采用 [MIT License](LICENSE)。第三方组件及其许可见[构建指南](docs/development.md#第三方许可)。Ordo 是独立项目，与 Apple、OpenAI 无隶属关系。
 
 <sub>截图使用演示任务。功能与测试记录见 <a href="VALIDATION.md">版本验证记录</a>。</sub>

@@ -22,7 +22,7 @@ Codex 在工作文件夹中生成或修改的文件不在数据库备份中，�
 3. 将之前导出的完整 `.sqlite` 备份复制到数据文件夹，重命名为 `todo.db`。
 4. 重新打开 Ordo。
 
-JSON 可通过原项目 `backend/data.mjs import` 导入；它不包含完整日志和 Canvas 状态，日常备份优先使用完整 SQLite 备份。
+JSON 可通过命令行工具 `backend/data.mjs import` 导入；它不包含完整日志和 Canvas 状态，日常备份优先使用完整 SQLite 备份。
 
 ## Codex 与网络
 

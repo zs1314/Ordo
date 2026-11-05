@@ -1,8 +1,6 @@
-# ToDo
+# Ordo Backend
 
-A self-hosted to-do board for one person and the AI agents they hand work to.
-
-**[Live demo](https://todo.axi404.top)** (made-up data; your changes stay in your browser)
+The task data service and web development interface for Ordo. For the macOS app, see the [product overview](../README.md) and [build guide](../docs/development.md).
 
 ![The board with sample data](docs/screenshot.png)
 
@@ -29,8 +27,8 @@ The server uses only Node's standard library, including its built-in SQLite. The
 Needs Node 24 or later.
 
 ```sh
-git clone https://github.com/Axi404/todo.git
-cd todo
+git clone https://github.com/zs1314/Ordo.git
+cd Ordo/backend
 node server.mjs
 ```
 
@@ -81,7 +79,7 @@ With `CANVAS_HOST` (for example `canvas.instructure.com`) and an access token in
 
 ## Demo site
 
-`node demo/build.mjs <dir>` writes a static copy of the board with made-up data. It runs entirely in the browser: no server, no requests, and changes are gone after a reload. The [live demo](https://todo.axi404.top) is built this way.
+`node demo/build.mjs <dir>` writes a static copy of the board with made-up data. It runs entirely in the browser: no server, no requests, and changes are gone after a reload.
 
 ## Deploying
 

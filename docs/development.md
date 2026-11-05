@@ -31,7 +31,7 @@ backend/test/           数据、API 与执行逻辑测试
 backend/dev/            界面测试和演示数据
 ```
 
-`backend/README.md` 保留上游 Web 项目的说明。Ordo 的桌面入口是原生启动器，不是直接运行上游 Web 服务。
+`backend/README.md` 介绍数据服务、API 与 Web 开发模式。Ordo 桌面应用通过原生启动器运行。
 
 ## Codex 集成
 
@@ -57,7 +57,7 @@ node dev/test-codex-ui.mjs
 
 ## 第三方许可
 
-- 原项目：[`backend/LICENSE`](../backend/LICENSE)。
+- 后端组件：[`backend/LICENSE`](../backend/LICENSE)。
 - Preact / htm：[`backend/web/vendor/`](../backend/web/vendor/)。
 - 字体：[`backend/web/fonts/`](../backend/web/fonts/)。
 - Node.js 及组件：[`native/NODE-LICENSE`](../native/NODE-LICENSE)，构建后同时置于应用的 `Contents/Resources/runtime/LICENSE`。更换内置 Node.js 版本时应同步核对许可文件。
