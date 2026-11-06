@@ -10,7 +10,7 @@ export function Preferences({ doc, onChange, onClose }) {
   const seg = (key, options) => html`<div class="d-segment">${options.map(([value, label]) => html`<button type="button" aria-pressed=${t[key] === value} class=${t[key] === value ? 'selected' : ''} onClick=${() => change({ [key]: value })}>${label}</button>`)}</div>`;
   return html`<${Dialog} title="设置" onClose=${onClose} class="d-preferences">
     <div class="d-dialog-head"><h2>设置</h2><${IconButton} icon="close" label="关闭设置" onClick=${onClose} /></div>
-    <div class="d-editor-scroll"><div class="d-pref-intro"><div class="d-app-mark"><${Icon} name="check" size=${26} /></div><div><strong>Ordo</strong><p>把心思，留给重要的事。</p></div><span>2.2.0</span></div>
+    <div class="d-editor-scroll"><div class="d-pref-intro"><div class="d-app-mark"><${Icon} name="check" size=${26} /></div><div><strong>Ordo</strong><p>把心思，留给重要的事。</p></div><span>2.2.1</span></div>
       <h3 class="d-pref-heading">外观</h3><div class="d-pref-group">
         <div class="d-pref-row"><label>显示模式</label>${seg('mode', [['auto','跟随系统'],['light','浅色'],['dark','深色']])}</div>
         <div class="d-pref-row"><label>启动时打开</label><select aria-label="启动视图" value=${['all','today','upcoming'].includes(t.desktopStartView) ? t.desktopStartView : 'all'} onChange=${e => change({ desktopStartView: e.target.value })}><option value="all">全部待办</option><option value="today">今天</option><option value="upcoming">接下来</option></select></div>

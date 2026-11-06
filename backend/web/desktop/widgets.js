@@ -7,15 +7,15 @@ export function Button({ children, icon, onClick, title, class: cls = '', disabl
 export function IconButton({ icon, label, onClick, class: cls = '', ...rest }) {
   return html`<button type="button" class=${`d-icon-button ${cls}`} title=${label} aria-label=${label} onClick=${onClick} ...${rest}><${Icon} name=${icon} /></button>`;
 }
-export function Dialog({ children, title, onClose, class: cls = '' }) {
+export function Dialog({ children, title, onClose, autoFocus = true, backdropClass = '', class: cls = '' }) {
   const ref = useRef(null), close = useRef(onClose);
   close.current = onClose;
   useLayoutEffect(() => {
     const before = document.activeElement;
     const root = ref.current;
     const focusable = () => [...root.querySelectorAll('input:not(:disabled),textarea:not(:disabled),select:not(:disabled),button:not(:disabled),summary,[tabindex="0"]')].filter(el => el.offsetParent !== null && !el.closest('details:not([open])') || el.matches('summary') && el.offsetParent !== null);
-    const first = root.querySelector('[data-autofocus]') || focusable()[0];
-    first?.focus();
+    const first = autoFocus ? root.querySelector('[data-autofocus]') || focusable()[0] : root;
+    first?.focus({preventScroll:true});
     const workspace = document.querySelector('.d-workspace');
     if (workspace) workspace.inert = true;
     const key = e => {
@@ -27,10 +27,10 @@ export function Dialog({ children, title, onClose, class: cls = '' }) {
       }
     };
     root.addEventListener('keydown', key);
-    return () => { if (workspace) workspace.inert = false; root.removeEventListener('keydown', key); if (before?.isConnected) before.focus(); };
+    return () => { if (workspace) workspace.inert = false; root.removeEventListener('keydown', key); if (before?.isConnected) before.focus({preventScroll:true}); };
   }, []);
-  return html`<div class=${`d-modal-backdrop ${cls.includes('inspector') ? 'inspector-backdrop' : ''}`} onMouseDown=${e => { if (e.target === e.currentTarget) onClose(); }}>
-    <section class=${`d-dialog ${cls}`} role="dialog" aria-modal="true" aria-label=${title} ref=${ref}>${children}</section>
+  return html`<div class=${`d-modal-backdrop ${cls.includes('inspector') ? 'inspector-backdrop' : ''} ${backdropClass}`} onMouseDown=${e => { if (e.target === e.currentTarget) onClose(); }}>
+    <section class=${`d-dialog ${cls}`} role="dialog" aria-modal="true" aria-label=${title} tabindex="-1" ref=${ref}>${children}</section>
   </div>`;
 }
 

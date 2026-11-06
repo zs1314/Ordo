@@ -220,7 +220,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     }
 
     @objc func about() {
-        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Ordo", .applicationVersion: "2.2.0",
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Ordo", .applicationVersion: "2.2.1",
             .credits: NSAttributedString(string: "序 · 给生活，一点秩序。\n\n专注待办，保存在本机。"),
             NSApplication.AboutPanelOptionKey(rawValue: "Copyright"): "组件许可保留在应用 Resources 中。"])
     }
@@ -282,12 +282,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
             guard let resource = Bundle.main.resourceURL else { return }
             do {
                 let script = try String(contentsOf: resource.appendingPathComponent("smoke.js"), encoding: .utf8)
-                webView.callAsyncJavaScript(script, arguments: [:], in: nil, in: .page) { result in
+                let snapshotIndex = CommandLine.arguments.firstIndex(of: "--snapshot-path")
+                let snapshotPath = snapshotIndex.flatMap { CommandLine.arguments.count > $0 + 1 ? CommandLine.arguments[$0 + 1] : nil }
+                webView.callAsyncJavaScript(script, arguments: ["captureDetails": snapshotPath != nil], in: nil, in: .page) { result in
                     switch result {
                     case .success(let result):
                         print("SMOKE PASSED: \(result)"); fflush(stdout)
-                        NSApp.terminate(nil)
-                    case .failure(let error): self.fail(error.localizedDescription)
+                        guard let path = snapshotPath else { NSApp.terminate(nil); return }
+                        webView.takeSnapshot(with: nil) { image, error in
+                            guard let image = image, let tiff = image.tiffRepresentation,
+                                  let bitmap = NSBitmapImageRep(data: tiff), let png = bitmap.representation(using: .png, properties: [:]) else {
+                                self.fail(error?.localizedDescription ?? "Could not capture WebKit snapshot"); return
+                            }
+                            do { try png.write(to: URL(fileURLWithPath: path)); print("WEBKIT SNAPSHOT SAVED"); fflush(stdout); NSApp.terminate(nil) }
+                            catch { self.fail(error.localizedDescription) }
+                        }
+                    case .failure(let error): self.fail(String(describing: error))
                     }
                 }
             } catch { self.fail(error.localizedDescription) }

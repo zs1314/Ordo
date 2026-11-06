@@ -45,12 +45,13 @@ node --test test/*.test.mjs
 node dev/test-desktop.mjs
 node dev/test-focus-ui.mjs
 node dev/test-status-board.mjs
+node dev/test-editor-ui.mjs
 node dev/test-desktop-performance.mjs
 ```
 
 界面测试需要 Google Chrome，默认读取 macOS 标准安装路径，也可用 `CHROME` 指定可执行文件。测试通过 CLI 启动无头浏览器，使用独立临时数据与浏览器配置。
 
-原生冒烟测试位于 `native/smoke.js`，通过构建后应用二进制的 `--smoke-test --data-dir <临时目录>` 参数运行。始终指定独立测试目录；在同一目录再次运行会检查重启后的持久化。已完成的验证见 [VALIDATION.md](../VALIDATION.md)。
+原生冒烟测试位于 `native/smoke.js`，通过构建后应用二进制的 `--smoke-test --data-dir <临时目录>` 参数运行。始终指定独立测试目录；在同一目录再次运行会检查重启后的持久化。首次运行时可追加 `--snapshot-path <绝对 PNG 路径>`，导出实际 WKWebView 的详情截图。已完成的验证见 [VALIDATION.md](../VALIDATION.md)。
 
 从仓库根目录生成演示截图：
 

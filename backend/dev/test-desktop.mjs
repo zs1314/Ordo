@@ -28,7 +28,7 @@ try {
   check('priority toggles with optimistic feedback',true);
   await click(el('.d-task[data-id="design"] .d-task-body'));
   await wait(`!!${el('.d-inspector')}`);
-  check('task opens accessible inspector with focus',await ev(`${el('.d-workspace')}.inert && document.activeElement.matches('.d-title-input')`));
+  check('task opens accessible inspector with focus',await ev(`${el('.d-workspace')}.inert && document.activeElement.matches('.d-inspector')`));
   await type(el('[aria-label="任务标题"]'),'整理设计方向 · 已编辑');
   await type(el('[aria-label="添加子任务"]'),'验证交互原型');
   await click(el('.d-subtask-add button'));
