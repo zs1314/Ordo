@@ -46,7 +46,8 @@ try {
   await click(el('.d-quick-entry button'));
   await wait(`document.querySelectorAll('.d-task').length===8`);
   check('quick entry persists without losing focus',true);
-  await click(button('多选'));
+  await click(el('.d-view-options > summary'));
+  await click(button('选择多个任务'));
   await click(el('[aria-label="选择 记下脑海里闪过的好点子"]'));
   await click(el('[aria-label="选择 快速输入测试"]'));
   await click(el('[aria-label="将所选任务移入回收站"]'));
@@ -68,16 +69,15 @@ try {
   if(await ev(`!!${el('.d-toast [aria-label="关闭提示"]')}`)) await click(el('.d-toast [aria-label="关闭提示"]'));
   if(process.argv[2]) await page.screenshot(process.argv[2]+'-深色.png');
   check('dark appearance persists and renders', (await board.api('GET','/api/todo')).theme.mode==='dark');
-  await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.trim()==='日历')`);
-  await wait(`document.querySelectorAll('.d-calendar-cell').length>=28`);
-  check('calendar renders month and selected-day agenda',true);
+  await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.includes('接下来'))`);
+  check('upcoming view shows future tasks only',await ev(`document.querySelectorAll('.d-task').length===1 && !!${el('.d-task[data-id="weekend"]')}`));
   await ev(`window.dispatchEvent(new CustomEvent('ordo-command',{detail:'new'}))`);
   await wait(`!!${el('.d-composer')}`);
   await type(el('[aria-label="任务标题"]'),'新建面板测试');
   await click(button('添加待办'));
   await wait(`!${el('.d-composer')}`);
   check('native new command saves through composer',(await board.api('GET','/api/todo')).items.some(i=>i.title==='新建面板测试'));
-  await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.includes('习惯打卡'))`);
+  await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.includes('全部待办'))`);
   await click(el('.d-task[data-id="read"] .d-task-check'));
   await wait(`${el('.d-task[data-id="read"]')}.classList.contains('done')`);
   await sleep(250);
@@ -89,7 +89,7 @@ try {
   check('minimum window has no horizontal overflow',await ev(`document.documentElement.scrollWidth<=innerWidth && ${el('.d-main-scroll')}.scrollWidth<=${el('.d-main-scroll')}.clientWidth`));
   check('sidebar settings remain visible at minimum height',await ev(`${el('.d-sidebar-footer')}.getBoundingClientRect().bottom<=innerHeight`));
   await type(el('[aria-label="快速添加待办"]'),'暂存的输入');
-  await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.includes('重要'))`);
+  await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.includes('今天'))`);
   await click(`[...document.querySelectorAll('.d-nav-item')].find(b=>b.textContent.includes('全部待办'))`);
   check('quick-entry draft survives navigation',await ev(`${el('[aria-label="快速添加待办"]')}.value==='暂存的输入' && window.ordoHasUnsavedChanges()`));
   check('no browser runtime or network errors',page.errors.length===0);

@@ -117,7 +117,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
             process.currentDirectoryURL = resources.appendingPathComponent("backend")
             process.environment = ["PATH": "/usr/bin:/bin", "HOME": NSHomeDirectory(), "LANG": "zh_CN.UTF-8",
                                    "TMPDIR": NSTemporaryDirectory(), "TODO_PORT": "0", "TODO_DIR": dataDirectory.path,
-                                   "TODO_DESKTOP_TOKEN": token]
+                                   "TODO_DESKTOP_TOKEN": token, "TODO_CODEX_DISABLED": "1"]
             // Preserve explicit account/network configuration supplied by the launcher.
             for key in ["CODEX_HOME", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "all_proxy", "no_proxy", "CODEX_CA_CERTIFICATE", "SSL_CERT_FILE"] {
                 if let value = ProcessInfo.processInfo.environment[key] { process.environment?[key] = value }
@@ -220,13 +220,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     }
 
     @objc func about() {
-        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Ordo", .applicationVersion: "2.1.1",
-            .credits: NSAttributedString(string: "序 · 心中有序，行事从容。\n\n基于 Axi404/todo（MIT）\n本地待办 · Codex 协作"),
-            NSApplication.AboutPanelOptionKey(rawValue: "Copyright"): "上游与第三方许可保留在应用 Resources 中。"])
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Ordo", .applicationVersion: "2.2.0",
+            .credits: NSAttributedString(string: "序 · 给生活，一点秩序。\n\n专注待办，保存在本机。"),
+            NSApplication.AboutPanelOptionKey(rawValue: "Copyright"): "组件许可保留在应用 Resources 中。"])
     }
     @objc func helpWindow() {
         let alert = NSAlert(); alert.messageText = "Ordo · 使用说明"
-        alert.informativeText = "⌘N 新建待办，⌘↵ 保存详情。列表下方也可快速输入并回车。\n点击圆圈完成任务，点击任务打开详情。可以设置日期、优先级、标签、子任务与重复打卡。\n\n⌘F / ⌘K 搜索任务。拖动任务到左侧清单即可移动；「多选」支持批量完成、移动与删除。\n删除的任务保留在回收站，可以恢复。\n\n任务详情 → 交给 Codex → 开始执行。沿用本机 Codex 登录，可查看执行记录、结果和生成文件；返回结果后由你验收。关闭窗口时继续运行，退出 Ordo 时停止。\n\n⌘, 打开设置。数据自动保存在本机，可从「文件」菜单导出完整备份；Agent 生成文件需另外保存。"
+        alert.informativeText = "在顶部输入任务，按回车保存。点击四种状态筛选：我在做、Agent 在做、等别人、还没做。今天视图中新建的任务安排到今天，接下来视图中默认安排到明天。\n\n卡片上可以直接开始、完成或编辑任务。Agent 分类只记录交接位置和说明，不会自动执行；点「看过了」更新跟进时间，点「收回自己做」回到我在做。\n\n⌘N 打开新建详情，⌘↵ 保存，⌘F / ⌘K 搜索。日期、步骤、重复与标签按需添加。拖动任务到清单即可移动，右上角「…」提供排序、多选和编辑清单。\n\n已完成与回收站保留任务记录。⌘, 打开设置，或从「文件」菜单备份数据。"
         alert.addButton(withTitle: "知道了"); alert.beginSheetModal(for: window)
     }
 
@@ -297,8 +297,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     func confirmDiscard(quitting: Bool = false, _ completion: @escaping (Bool) -> Void) {
         webView.evaluateJavaScript("Boolean(window.ordoHasUnsavedChanges?.() || (\(quitting ? "true" : "false") && window.ordoActiveRuns))") { result, _ in
             guard result as? Bool == true else { completion(true); return }
-            let alert = NSAlert(); alert.messageText = quitting ? "还有未保存的内容或正在执行的任务" : "还有未保存的内容"
-            alert.informativeText = quitting ? "退出会放弃未提交的草稿并停止正在运行的 Codex。仅关闭窗口可以让任务继续运行。" : "请先保存正在编辑的任务，或等待当前修改保存完成。"
+            let alert = NSAlert(); alert.messageText = quitting ? "还有未保存的内容" : "还有未保存的内容"
+            alert.informativeText = quitting ? "退出会放弃尚未提交的草稿。请先保存需要保留的内容。" : "请先保存正在编辑的任务，或等待当前修改保存完成。"
             alert.addButton(withTitle: "继续编辑"); alert.addButton(withTitle: "放弃并继续")
             alert.beginSheetModal(for: self.window) { completion($0 == .alertSecondButtonReturn) }
         }

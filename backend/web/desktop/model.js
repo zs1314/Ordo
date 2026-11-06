@@ -45,6 +45,6 @@ export function dateLabel(i) {
   return `${Number(y) === new Date().getFullYear() ? '' : y + '/'}${Number(m)}月${Number(d)}日`;
 }
 export function smartTitle(view, doc) {
-  return ({ today: '今天', upcoming: '即将到来', all: '全部待办', important: '重要', habits: '习惯打卡', completed: '已完成', trash: '回收站', agent: 'Codex 协作', calendar: '日历' })[view]
+  return ({ today: '今天', upcoming: '接下来', all: '全部待办', important: '重要', habits: '习惯打卡', completed: '已完成', trash: '回收站', agent: 'Codex 协作', calendar: '日历' })[view]
     ?? (view.startsWith('section:') ? doc.sections.find(s => s.id === view.slice(8))?.title : doc.groups.find(g => g.id === view.slice(6))?.title) ?? '全部待办';
 }

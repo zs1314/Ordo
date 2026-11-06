@@ -48,6 +48,7 @@ const server = createServer(async (req, res) => {
     }
     const url = new URL(req.url, `http://${HOST}:${PORT}`), path = url.pathname;
     if (desktopToken && path.startsWith('/api/desktop/codex')) {
+      if (!codex) return send(res, 404, { error: '此版本未启用 Codex' });
       if (path === '/api/desktop/codex' && req.method === 'GET') return send(res, 200, await codex.status(url.searchParams.has('refresh')));
       if (path === '/api/desktop/codex/run' && req.method === 'POST') return send(res, 200, await codex.start(await readBody(req)));
       const job = path.match(/^\/api\/desktop\/codex\/jobs\/([a-f0-9-]+)(\/stop)?$/);
@@ -77,7 +78,7 @@ const server = createServer(async (req, res) => {
 });
 
 prepareDesktop(() => codex?.shutdown());
-if (desktopToken) codex = createCodexRunner();
+if (desktopToken && process.env.TODO_CODEX_DISABLED !== '1') codex = createCodexRunner();
 server.listen(PORT, HOST, () => {
   PORT = server.address().port;
   HOSTS.add(`127.0.0.1:${PORT}`); HOSTS.add(`localhost:${PORT}`);

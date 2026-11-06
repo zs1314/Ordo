@@ -5,7 +5,6 @@
 - macOS，已验证 Apple Silicon / macOS 14.6。
 - Xcode Command Line Tools，提供 Swift 编译器与签名工具。
 - Node.js 24+，使用标准库中的 SQLite。
-- Codex 功能需要已安装、已登录的本机 Codex CLI。
 
 ## 构建
 
@@ -24,22 +23,19 @@ ORDO_NODE="$(command -v node)" ORDO_OUTPUT="$PWD/dist/Ordo.app" bash build.sh
 ```text
 native/                 Swift / AppKit / WKWebView 窗口、菜单、文件对话框
 backend/desktop.mjs     桌面服务启动、会话和数据目录
-backend/codex.mjs       Codex 进程、事件流与生命周期
-backend/web/desktop/    Ordo 桌面界面
+backend/web/desktop/    Ordo 桌面界面与四状态卡片
 backend/core/           任务模型与 SQLite 存储
-backend/test/           数据、API 与执行逻辑测试
-backend/dev/            界面测试和演示数据
+backend/test/           数据、API 与存储测试
+backend/dev/            界面测试与演示截图生成
 ```
 
-`backend/README.md` 介绍数据服务、API 与 Web 开发模式。Ordo 桌面应用通过原生启动器运行。
+桌面界面使用 Preact / htm 原生 ES 模块，无前端打包步骤。`backend/README.md` 介绍独立的数据服务、API 与 Web 开发模式；Ordo 桌面应用通过原生启动器运行。
 
-## Codex 集成
+## 手动 Agent 分类
 
-通过官方非交互执行接口运行本机 Codex，以标准输入传入任务，解析 JSON 事件流，使用 `workspace-write` 权限。每次调用启用 `respect_system_proxy`，遵循 macOS 系统代理/PAC；不会修改全局 Codex 配置。启动器保留显式传入的代理、自定义 CA 与 CODEX_HOME 环境设置。
+2.2 的 Agent 分类只维护任务状态和交接信息。原生启动器设置 `TODO_CODEX_DISABLED=1`，服务不创建 Codex 执行器，相关桌面 API 返回 404；前端没有执行入口、状态轮询或登录检测。
 
-任务成功返回后进入等待验收；停止、进程失败、连接重试超时或应用退出都不会自动勾选任务。当前限制一个活动执行，执行记录有长度及数量限制。需要额外交互授权的步骤可能无法在非交互模式完成。
-
-参考：[非交互执行](https://learn.chatgpt.com/docs/non-interactive-mode)、[系统代理配置](https://learn.chatgpt.com/docs/enterprise/managed-configuration#use-the-system-proxy-for-native-client-requests)。
+旧版本的执行模块与单元测试保留在源码中，已有执行历史和工作目录也保留。它们不参与当前桌面工作流程。
 
 ## 验证
 
@@ -47,13 +43,22 @@ backend/dev/            界面测试和演示数据
 cd backend
 node --test test/*.test.mjs
 node dev/test-desktop.mjs
+node dev/test-focus-ui.mjs
+node dev/test-status-board.mjs
 node dev/test-desktop-performance.mjs
-node dev/test-codex-ui.mjs
 ```
 
-界面测试需要 Google Chrome，默认读取 macOS 标准安装路径，也可用 `CHROME` 指定可执行文件。浏览器测试使用独立临时数据与浏览器配置；Codex UI 测试使用可控模拟进程。真实 Codex 执行另行验证，需要本机登录和网络。
+界面测试需要 Google Chrome，默认读取 macOS 标准安装路径，也可用 `CHROME` 指定可执行文件。测试通过 CLI 启动无头浏览器，使用独立临时数据与浏览器配置。
 
-原生冒烟测试位于 `native/smoke.js`，可通过构建后应用二进制的 `--smoke-test --data-dir <临时目录>` 参数运行。始终指定独立测试目录。已完成的验证见 [VALIDATION.md](../VALIDATION.md)。
+原生冒烟测试位于 `native/smoke.js`，通过构建后应用二进制的 `--smoke-test --data-dir <临时目录>` 参数运行。始终指定独立测试目录；在同一目录再次运行会检查重启后的持久化。已完成的验证见 [VALIDATION.md](../VALIDATION.md)。
+
+从仓库根目录生成演示截图：
+
+```sh
+node backend/dev/snapshot-desktop.mjs docs/images
+```
+
+该脚本只使用合成任务，不读取个人待办。
 
 ## 第三方许可
 

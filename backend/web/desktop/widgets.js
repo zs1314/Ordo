@@ -13,7 +13,7 @@ export function Dialog({ children, title, onClose, class: cls = '' }) {
   useLayoutEffect(() => {
     const before = document.activeElement;
     const root = ref.current;
-    const focusable = () => [...root.querySelectorAll('input:not(:disabled),textarea:not(:disabled),select:not(:disabled),button:not(:disabled),[tabindex="0"]')].filter(el => el.offsetParent !== null);
+    const focusable = () => [...root.querySelectorAll('input:not(:disabled),textarea:not(:disabled),select:not(:disabled),button:not(:disabled),summary,[tabindex="0"]')].filter(el => el.offsetParent !== null && !el.closest('details:not([open])') || el.matches('summary') && el.offsetParent !== null);
     const first = root.querySelector('[data-autofocus]') || focusable()[0];
     first?.focus();
     const workspace = document.querySelector('.d-workspace');

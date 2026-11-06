@@ -1,5 +1,6 @@
 import { html } from '../vendor/preact-htm.js';
 const PATHS = {
+  play: 'm8 4 12 8-12 8Z',
   sun: 'M12 3v1m0 16v1M3 12h1m16 0h1M5.6 5.6l.7.7m11.4 11.4.7.7M5.6 18.4l.7-.7M17.7 6.3l.7-.7M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
   upcoming: 'M7 3v4m10-4v4M4 10h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2m4 9 2 2 4-4',
   all: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',

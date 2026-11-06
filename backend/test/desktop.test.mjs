@@ -13,7 +13,7 @@ test('desktop session, ephemeral port, CRUD, consistent backup, process lifecycl
   let child;
   async function start() {
     child = spawn(process.execPath, [fileURLToPath(new URL('../server.mjs', import.meta.url))], {
-      env: { ...process.env, TODO_DIR: dir, TODO_PORT: '0', TODO_DESKTOP_TOKEN: 'test-secret' },
+      env: { ...process.env, TODO_DIR: dir, TODO_PORT: '0', TODO_DESKTOP_TOKEN: 'test-secret', TODO_CODEX_DISABLED: '1' },
       stdio: ['pipe', 'pipe', 'pipe']
     });
     let log = '';
@@ -42,6 +42,8 @@ test('desktop session, ephemeral port, CRUD, consistent backup, process lifecycl
     assert.notEqual(new URL(url).port, '0');
     assert.equal((await fetch(url + '/api/todo')).status, 401);
     assert.equal((await api('/api/items', { method: 'POST', headers: { Origin: 'https://untrusted.example' }, body: '{}' })).status, 403);
+    assert.equal((await api('/api/desktop/codex')).status, 404);
+    assert.equal((await api('/api/desktop/codex/run', {method:'POST',body:'{}'})).status, 404);
     let doc = await (await api('/api/todo')).json();
     assert.deepEqual(doc.sections.map(s => s.title), ['收件箱', '工作', '生活']);
     doc = await (await api('/api/items', { method: 'POST', body: JSON.stringify({ title: 'desktop persistence', group: doc.groups[0].id }) })).json();
